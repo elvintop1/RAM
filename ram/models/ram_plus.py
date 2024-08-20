@@ -314,7 +314,8 @@ class RAM_plus(nn.Module):
         )
 
         logits = self.fc(tagging_embed[0]).squeeze(-1)
-        # print(logits)
+        prob = torch.sigmoid(logits)
+        probs = np.array([], dtype = int)
 
         targets = torch.where(
             torch.sigmoid(logits) > self.class_threshold.to(image.device),
@@ -326,16 +327,19 @@ class RAM_plus(nn.Module):
         # print(tag)
         tag_output = []
         tag_output_chinese = []
+        probs = np.array([], dtype = int)
         for b in range(bs):
             index = np.argwhere(tag[b] == 1)
             #print(targets[index])
+            for indexs in index:
+                probs = np.append(probs,prob[b][indexs[0]].cpu().numpy())
             token = self.tag_list[index].squeeze(axis=1)
             tag_output.append(' | '.join(token))
             token_chinese = self.tag_list_chinese[index].squeeze(axis=1)
             tag_output_chinese.append(' | '.join(token_chinese))
 
 
-        return tag_output, tag_output_chinese, logits
+        return tag_output, tag_output_chinese, probs
 
     def generate_tag_openset(self,
                  image,
