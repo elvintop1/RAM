@@ -336,7 +336,7 @@ class RAM_plus(nn.Module):
             tag_output_chinese.append(' | '.join(token_chinese))
 
 
-        return tag_output, tag_output_chinese
+        return tag_output, tag_output_chinese, logits
 
     def generate_tag_openset(self,
                  image,
