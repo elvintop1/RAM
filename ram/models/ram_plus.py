@@ -1,7 +1,3 @@
-'''
- * The Recognize Anything Plus Model (RAM++)
- * Written by Xinyu Huang
-'''
 import json
 import warnings
 
@@ -318,6 +314,7 @@ class RAM_plus(nn.Module):
         )
 
         logits = self.fc(tagging_embed[0]).squeeze(-1)
+        # print(logits)
 
         targets = torch.where(
             torch.sigmoid(logits) > self.class_threshold.to(image.device),
@@ -326,10 +323,12 @@ class RAM_plus(nn.Module):
 
         tag = targets.cpu().numpy()
         tag[:,self.delete_tag_index] = 0
+        # print(tag)
         tag_output = []
         tag_output_chinese = []
         for b in range(bs):
             index = np.argwhere(tag[b] == 1)
+            #print(targets[index])
             token = self.tag_list[index].squeeze(axis=1)
             tag_output.append(' | '.join(token))
             token_chinese = self.tag_list_chinese[index].squeeze(axis=1)
@@ -381,6 +380,7 @@ class RAM_plus(nn.Module):
         )
 
         logits = self.fc(tagging_embed[0]).squeeze(-1)
+        #print(logits)
 
         targets = torch.where(
             torch.sigmoid(logits) > self.class_threshold.to(image.device),
@@ -392,6 +392,7 @@ class RAM_plus(nn.Module):
         tag_output = []
         for b in range(bs):
             index = np.argwhere(tag[b] == 1)
+            print(targets[index])
             token = self.tag_list[index].squeeze(axis=1)
             tag_output.append(' | '.join(token))
 
